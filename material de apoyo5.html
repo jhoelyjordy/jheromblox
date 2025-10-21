@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas Interactivas de Biología</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32, #4caf50);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #81c784, #e8f5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .selection-screen, .quiz-screen, .results-screen {
+            display: none;
+        }
+        
+        .selection-screen.active, .quiz-screen.active, .results-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .branch-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .branch-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .branch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .branch-card:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .branch-card:hover {
+            transform: translateY(-10px);
+            border-color: #81c784;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .branch-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+        
+        .branch-title {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: #81c784;
+        }
+        
+        .branch-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #81c784;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .option.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #388e3c, #4caf50);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            margin: 25px 0;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(45deg, #4CAF50, #8bc34a);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-counter {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #81c784;
+        }
+        
+        .results-container {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .score {
+            font-size: 5rem;
+            margin: 30px 0;
+            color: #4CAF50;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .result-message {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            color: #81c784;
+        }
+        
+        .feedback {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .feedback.correct {
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            border-left: 5px solid #f44336;
+        }
+        
+        .results-summary {
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 30px 0;
+            padding-right: 10px;
+        }
+        
+        .results-summary::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .results-summary::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        .results-summary::-webkit-scrollbar-thumb {
+            background: #81c784;
+            border-radius: 4px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .branch-selection {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+        }
+        #video_background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            background-size: cover;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Exploración Biológica</h1>
+            <p class="subtitle">Descubre los misterios de la vida a través de la ciencia</p>
+        </header>
+        
+        <!-- Pantalla de selección de rama -->
+        <div class="selection-screen active">
+            <div class="branch-selection">
+                <div class="branch-card" data-branch="biologia-celular">
+                    <div class="branch-icon">🔬</div>
+                    <h3 class="branch-title">Biología Celular</h3>
+                    <p class="branch-description">Células, organelos y biomoléculas fundamentales para la vida</p>
+                </div>
+                
+                <div class="branch-card" data-branch="genetica">
+                    <div class="branch-icon">🧬</div>
+                    <h3 class="branch-title">Genética</h3>
+                    <p class="branch-description">ADN, herencia y mecanismos de transmisión genética</p>
+                </div>
+                
+                <div class="branch-card" data-branch="ecologia">
+                    <div class="branch-icon">🌍</div>
+                    <h3 class="branch-title">Ecología</h3>
+                    <p class="branch-description">Ecosistemas, relaciones bióticas y conservación ambiental</p>
+                </div>
+                
+                <div class="branch-card" data-branch="biotecnologia">
+                    <div class="branch-icon">🧪</div>
+                    <h3 class="branch-title">Biotecnología</h3>
+                    <p class="branch-description">Aplicaciones tecnológicas de sistemas biológicos</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla del cuestionario -->
+        <div class="quiz-screen">
+            <div class="question-counter">
+                Pregunta <span id="current-question">1</span> de <span id="total-questions">10</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <h2 class="question-text" id="question-text">¿Cuál es la unidad básica de la vida?</h2>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Las opciones se generarán dinámicamente -->
+                </div>
+                
+                <div class="feedback" id="feedback" style="display: none;">
+                    <!-- La retroalimentación se mostrará aquí -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-btn" disabled>← Anterior</button>
+                <button id="next-btn">Siguiente →</button>
+            </div>
+        </div>
+        
+        <!-- Pantalla de resultados -->
+        <div class="results-screen">
+            <div class="results-container">
+                <h2>¡Expedición Científica Completa!</h2>
+                <div class="score pulse" id="final-score">0/10</div>
+                <p class="result-message" id="result-message">¡Eres un verdadero biólogo!</p>
+                
+                <div class="results-summary" id="results-summary">
+                    <!-- El resumen de resultados se generará aquí -->
+                </div>
+                
+                <button id="restart-btn">Nueva Exploración Científica</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de preguntas por rama (10 preguntas cada una)
+        const questionsDatabase = {
+            "biologia-celular": [
+                {
+                    question: "¿Cuál es la unidad básica de la vida?",
+                    options: [
+                        "La célula",
+                        "El átomo",
+                        "La molécula",
+                        "El tejido"
+                    ],
+                    correct: 0,
+                    explanation: "La célula es considerada la unidad básica de la vida según la teoría celular, propuesta por Schleiden y Schwann en 1839."
+                },
+                {
+                    question: "¿Qué organelo es conocido como la 'central energética' de la célula?",
+                    options: [
+                        "Mitocondria",
+                        "Núcleo",
+                        "Retículo endoplásmico",
+                        "Aparato de Golgi"
+                    ],
+                    correct: 0,
+                    explanation: "La mitocondria produce ATP mediante la respiración celular, por lo que se le considera la central energética de la célula."
+                },
+                {
+                    question: "¿Qué biomolécula es el principal componente estructural de las membranas celulares?",
+                    options: [
+                        "Lípidos (fosfolípidos)",
+                        "Proteínas",
+                        "Carbohidratos",
+                        "Ácidos nucleicos"
+                    ],
+                    correct: 0,
+                    explanation: "Los fosfolípidos forman la bicapa lipídica que constituye la estructura básica de todas las membranas celulares."
+                },
+                {
+                    question: "¿Qué proceso permite a las células dividirse y producir células hijas idénticas?",
+                    options: [
+                        "Mitosis",
+                        "Meiosis",
+                        "Fotosíntesis",
+                        "Respiración"
+                    ],
+                    correct: 0,
+                    explanation: "La mitosis es el proceso de división celular que produce dos células hijas genéticamente idénticas a la célula madre."
+                },
+                {
+                    question: "¿Qué organelo contiene el material genético de la célula?",
+                    options: [
+                        "Núcleo",
+                        "Ribosoma",
+                        "Mitocondria",
+                        "Cloroplasto"
+                    ],
+                    correct: 0,
+                    explanation: "El núcleo celular contiene la mayor parte del material genético en forma de cromosomas de ADN."
+                },
+                {
+                    question: "¿Qué tipo de transporte celular requiere energía (ATP)?",
+                    options: [
+                        "Transporte activo",
+                        "Difusión simple",
+                        "Ósmosis",
+                        "Difusión facilitada"
+                    ],
+                    correct: 0,
+                    explanation: "El transporte activo mueve sustancias contra su gradiente de concentración y requiere energía en forma de ATP."
+                },
+                {
+                    question: "¿Qué organelo es responsable de la síntesis de proteínas?",
+                    options: [
+                        "Ribosoma",
+                        "Mitocondria",
+                        "Lisosoma",
+                        "Vacuola"
+                    ],
+                    correct: 0,
+                    explanation: "Los ribosomas, libres en el citoplasma o unidos al retículo endoplásmico, son los sitios de síntesis de proteínas."
+                },
+                {
+                    question: "¿Qué característica diferencia a las células procariotas de las eucariotas?",
+                    options: [
+                        "Ausencia de núcleo definido",
+                        "Presencia de mitocondrias",
+                        "Tamaño más grande",
+                        "Presencia de cloroplastos"
+                    ],
+                    correct: 0,
+                    explanation: "Las células procariotas carecen de núcleo definido y su material genético está disperso en el citoplasma."
+                },
+                {
+                    question: "¿Qué proceso convierte la energía luminosa en energía química?",
+                    options: [
+                        "Fotosíntesis",
+                        "Respiración celular",
+                        "Fermentación",
+                        "Digestión"
+                    ],
+                    correct: 0,
+                    explanation: "La fotosíntesis en los cloroplastos convierte energía luminosa, agua y CO₂ en glucosa y oxígeno."
+                },
+                {
+                    question: "¿Qué estructura celular proporcione soporte y forma a la célula vegetal?",
+                    options: [
+                        "Pared celular",
+                        "Membrana plasmática",
+                        "Citoesqueleto",
+                        "Cápsula"
+                    ],
+                    correct: 0,
+                    explanation: "La pared celular de celulosa proporciona rigidez, soporte y protección a las células vegetales."
+                }
+            ],
+            "genetica": [
+                {
+                    question: "¿Qué significa las siglas ADN?",
+                    options: [
+                        "Ácido Desoxirribonucleico",
+                        "Ácido Diribonucleico Activo",
+                        "Adenosina Dinucleótido",
+                        "Agente De Naturalización"
+                    ],
+                    correct: 0,
+                    explanation: "ADN significa Ácido Desoxirribonucleico, la molécula que contiene la información genética de los organismos."
+                },
+                {
+                    question: "¿Quiénes descubrieron la estructura del ADN?",
+                    options: [
+                        "Watson y Crick",
+                        "Mendel y Darwin",
+                        "Pasteur y Koch",
+                        "Einstein y Newton"
+                    ],
+                    correct: 0,
+                    explanation: "James Watson y Francis Crick propusieron el modelo de doble hélice del ADN en 1953, basándose en trabajos previos como los de Rosalind Franklin."
+                },
+                {
+                    question: "¿Qué es un gen?",
+                    options: [
+                        "Unidad de herencia que codifica una proteína",
+                        "Un tipo de cromosoma",
+                        "Una molécula de ARN",
+                        "Una enzima digestiva"
+                    ],
+                    correct: 0,
+                    explanation: "Un gen es una secuencia de ADN que contiene la información para sintetizar una proteína o molécula de ARN funcional."
+                },
+                {
+                    question: "¿Qué patrón de herencia muestra el daltonismo?",
+                    options: [
+                        "Herencia ligada al cromosoma X",
+                        "Herencia autosómica dominante",
+                        "Herencia mitocondrial",
+                        "Herencia poligénica"
+                    ],
+                    correct: 0,
+                    explanation: "El daltonismo es un trastorno recesivo ligado al cromosoma X, por lo que afecta principalmente a los hombres."
+                },
+                {
+                    question: "¿Qué proceso produce gametos con variación genética?",
+                    options: [
+                        "Meiosis",
+                        "Mitosis",
+                        "Fisión binaria",
+                        "Gemación"
+                    ],
+                    correct: 0,
+                    explanation: "La meiosis incluye crossing over y segregación aleatoria, generando gametos con combinaciones genéticas únicas."
+                },
+                {
+                    question: "¿Qué son los alelos?",
+                    options: [
+                        "Formas alternativas de un gen",
+                        "Tipos de cromosomas",
+                        "Moléculas de ARN mensajero",
+                        "Enzimas de reparación del ADN"
+                    ],
+                    correct: 0,
+                    explanation: "Los alelos son versiones diferentes de un mismo gen que ocupan el mismo locus en cromosomas homólogos."
+                },
+                {
+                    question: "¿Qué científico es considerado el padre de la genética?",
+                    options: [
+                        "Gregor Mendel",
+                        "Charles Darwin",
+                        "Louis Pasteur",
+                        "Alexander Fleming"
+                    ],
+                    correct: 0,
+                    explanation: "Gregor Mendel, con sus experimentos con guisantes en el siglo XIX, estableció las leyes fundamentales de la herencia."
+                },
+                {
+                    question: "¿Qué es una mutación?",
+                    options: [
+                        "Cambio en la secuencia del ADN",
+                        "División celular acelerada",
+                        "Pérdida de un cromosoma",
+                        "Formación de un nuevo gen"
+                    ],
+                    correct: 0,
+                    explanation: "Una mutación es cualquier cambio en la secuencia de nucleótidos del ADN que puede alterar la función génica."
+                },
+                {
+                    question: "¿Qué proyecto secuenció el genoma humano completo?",
+                    options: [
+                        "Proyecto Genoma Humano",
+                        "Proyecto ADN Internacional",
+                        "Iniciativa Genética Mundial",
+                        "Consorcio de Secuenciación"
+                    ],
+                    correct: 0,
+                    explanation: "El Proyecto Genoma Humano (1990-2003) logró secuenciar y mapear todos los genes del genoma humano."
+                },
+                {
+                    question: "¿Qué tecnología permite editar genes específicos?",
+                    options: [
+                        "CRISPR-Cas9",
+                        "PCR",
+                        "Electroforesis",
+                        "Clonación"
+                    ],
+                    correct: 0,
+                    explanation: "CRISPR-Cas9 es una tecnología de edición genética que permite modificar secuencias específicas de ADN con alta precisión."
+                }
+            ],
+            "ecologia": [
+                {
+                    question: "¿Qué es un ecosistema?",
+                    options: [
+                        "Comunidad biológica más su ambiente físico",
+                        "Solo los seres vivos de un área",
+                        "El clima de una región",
+                        "Las relaciones entre depredadores y presas"
+                    ],
+                    correct: 0,
+                    explanation: "Un ecosistema incluye tanto los componentes bióticos (seres vivos) como abióticos (factores físicos y químicos) que interactúan en un área."
+                },
+                {
+                    question: "¿Qué organismos producen su propio alimento mediante fotosíntesis?",
+                    options: [
+                        "Productores (autótrofos)",
+                        "Consumidores (heterótrofos)",
+                        "Descomponedores",
+                        "Parásitos"
+                    ],
+                    correct: 0,
+                    explanation: "Los productores o autótrofos, como las plantas y algas, fabrican su propio alimento mediante fotosíntesis o quimiosíntesis."
+                },
+                {
+                    question: "¿Qué es la biodiversidad?",
+                    options: [
+                        "Variedad de vida en la Tierra",
+                        "Número de animales en un área",
+                        "Cantidad de plantas medicinales",
+                        "Diversidad de climas"
+                    ],
+                    correct: 0,
+                    explanation: "La biodiversidad incluye la variedad de especies, diversidad genética dentro de las especies, y variedad de ecosistemas."
+                },
+                {
+                    question: "¿Qué ciclo biogeoquímico involucra la evaporación y precipitación?",
+                    options: [
+                        "Ciclo del agua",
+                        "Ciclo del carbono",
+                        "Ciclo del nitrógeno",
+                        "Ciclo del fósforo"
+                    ],
+                    correct: 0,
+                    explanation: "El ciclo hidrológico o del agua incluye evaporación, condensación, precipitación y escorrentía."
+                },
+                {
+                    question: "¿Qué es una especie invasora?",
+                    options: [
+                        "Especie no nativa que causa daño al ecosistema",
+                        "Animal en peligro de extinción",
+                        "Planta medicinal rara",
+                        "Microorganismo beneficioso"
+                    ],
+                    correct: 0,
+                    explanation: "Las especies invasoras son organismos no nativos que se establecen y expanden, causando daños ecológicos o económicos."
+                },
+                {
+                    question: "¿Qué es la sucesión ecológica?",
+                    options: [
+                        "Cambio gradual en la composición de una comunidad",
+                        "Migración estacional de animales",
+                        "Extinción masiva de especies",
+                        "Expansión de desiertos"
+                    ],
+                    correct: 0,
+                    explanation: "La sucesión ecológica es el proceso de cambio gradual y ordenado en la composición de especies de una comunidad a lo largo del tiempo."
+                },
+                {
+                    question: "¿Qué gas es el principal responsable del efecto invernadero?",
+                    options: [
+                        "Dióxido de carbono (CO₂)",
+                        "Oxígeno (O₂)",
+                        "Nitrógeno (N₂)",
+                        "Hidrógeno (H₂)"
+                    ],
+                    correct: 0,
+                    explanation: "El CO₂ es el principal gas de efecto invernadero de origen antropogénico, aunque el metano y otros también contribuyen."
+                },
+                {
+                    question: "¿Qué es un nicho ecológico?",
+                    options: [
+                        "Papel funcional de una especie en el ecosistema",
+                        "Lugar físico donde vive una especie",
+                        "Tipo de alimento que consume un animal",
+                        "Época de reproducción de una planta"
+                    ],
+                    correct: 0,
+                    explanation: "El nicho ecológico describe cómo una especie interactúa con los factores bióticos y abióticos de su ambiente."
+                },
+                {
+                    question: "¿Qué organización internacional se enfoca en la conservación de especies?",
+                    options: [
+                        "UICN (Unión Internacional para la Conservación de la Naturaleza)",
+                        "OMS (Organización Mundial de la Salud)",
+                        "FAO (Organización de las Naciones Unidas para la Alimentación)",
+                        "UNESCO (Organización de las Naciones Unidas para la Educación, la Ciencia y la Cultura)"
+                    ],
+                    correct: 0,
+                    explanation: "La UICN mantiene la Lista Roja de especies amenazadas y promueve la conservación de la biodiversidad a nivel global."
+                },
+                {
+                    question: "¿Qué práctica ayuda a conservar los recursos naturales?",
+                    options: [
+                        "Las tres R: Reducir, Reutilizar, Reciclar",
+                        "Uso exclusivo de energía nuclear",
+                        "Deforestación controlada",
+                        "Caza deportiva regulada"
+                    ],
+                    correct: 0,
+                    explanation: "Las tres R (Reducir consumo, Reutilizar productos, Reciclar materiales) son fundamentales para la conservación de recursos y reducción de residuos."
+                }
+            ],
+            "biotecnologia": [
+                {
+                    question: "¿Qué es la biotecnología?",
+                    options: [
+                        "Uso de organismos vivos para desarrollar productos",
+                        "Estudio de fósiles antiguos",
+                        "Análisis de rocas y minerales",
+                        "Cultivo de plantas ornamentales"
+                    ],
+                    correct: 0,
+                    explanation: "La biotecnología utiliza sistemas biológicos, organismos vivos o sus derivados para crear o modificar productos o procesos."
+                },
+                {
+                    question: "¿Qué técnica permite amplificar pequeñas cantidades de ADN?",
+                    options: [
+                        "PCR (Reacción en Cadena de la Polimerasa)",
+                        "Electroforesis en gel",
+                        "Secuenciación Sanger",
+                        "Southern blot"
+                    ],
+                    correct: 0,
+                    explanation: "La PCR amplifica exponencialmente fragmentos específicos de ADN, permitiendo su análisis incluso a partir de muestras mínimas."
+                },
+                {
+                    question: "¿Qué organismo se usa comúnmente en ingeniería genética?",
+                    options: [
+                        "E. coli",
+                        "Saccharomyces cerevisiae",
+                        "Arabidopsis thaliana",
+                        "Drosophila melanogaster"
+                    ],
+                    correct: 0,
+                    explanation: "La bacteria Escherichia coli es ampliamente utilizada como huésped para clonar genes y producir proteínas recombinantes."
+                },
+                {
+                    question: "¿Qué es un organismo transgénico?",
+                    options: [
+                        "Organismo con genes de otra especie",
+                        "Organismo clonado artificialmente",
+                        "Organismo mutado naturalmente",
+                        "Organismo en peligro de extinción"
+                    ],
+                    correct: 0,
+                    explanation: "Un organismo transgénico contiene material genético de otra especie, insertado mediante técnicas de ingeniería genética."
+                },
+                {
+                    question: "¿Qué aplicación tiene la biotecnología en medicina?",
+                    options: [
+                        "Producción de insulina humana",
+                        "Fabricación de prótesis metálicas",
+                        "Desarrollo de rayos X",
+                        "Creación de antibióticos sintéticos"
+                    ],
+                    correct: 0,
+                    explanation: "La insulina humana recombinante fue uno de los primeros productos farmacéuticos obtenidos mediante biotecnología, usando bacterias modificadas."
+                },
+                {
+                    question: "¿Qué es la terapia génica?",
+                    options: [
+                        "Tratamiento que introduce genes funcionales",
+                        "Extracción de genes defectuosos",
+                        "Análisis de árboles genealógicos",
+                        "Modificación de cromosomas completos"
+                    ],
+                    correct: 0,
+                    explanation: "La terapia génica busca tratar enfermedades introduciendo genes funcionales para reemplazar o complementar genes defectuosos."
+                },
+                {
+                    question: "¿Qué cultivos han sido modificados genéticamente para resistencia a plagas?",
+                    options: [
+                        "Maíz Bt",
+                        "Trigo orgánico",
+                        "Arroz integral",
+                        "Tomate cherry"
+                    ],
+                    correct: 0,
+                    explanation: "El maíz Bt contiene genes de Bacillus thuringiensis que producen toxinas contra insectos plaga, reduciendo el uso de pesticidas."
+                },
+                {
+                    question: "¿Qué técnica permite identificar individuos por su ADN?",
+                    options: [
+                        "Huella genética (DNA fingerprinting)",
+                        "Análisis de grupo sanguíneo",
+                        "Prueba de paternidad serológica",
+                        "Estudio de huellas dactilares"
+                    ],
+                    correct: 0,
+                    explanation: "La huella genética analiza regiones hipervariables del ADN que son únicas para cada individuo (excepto gemelos idénticos)."
+                },
+                {
+                    question: "¿Qué es la biotecnología roja?",
+                    options: [
+                        "Aplicaciones médicas y farmacéuticas",
+                        "Procesos industriales",
+                        "Agricultura y alimentos",
+                        "Biorremediación ambiental"
+                    ],
+                    correct: 0,
+                    explanation: "La biotecnología roja se enfoca en aplicaciones médicas como desarrollo de fármacos, terapias y diagnóstico."
+                },
+                {
+                    question: "¿Qué enzima se usa para cortar el ADN en lugares específicos?",
+                    options: [
+                        "Enzimas de restricción",
+                        "ADN polimerasa",
+                        "ARN polimerasa",
+                        "Ligasa"
+                    ],
+                    correct: 0,
+                    explanation: "Las enzimas de restricción reconocen y cortan secuencias específicas de ADN, siendo herramientas esenciales en ingeniería genética."
+                }
+            ]
+        };
+
+        // Variables de estado
+        let currentBranch = '';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        // Elementos DOM
+        const selectionScreen = document.querySelector('.selection-screen');
+        const quizScreen = document.querySelector('.quiz-screen');
+        const resultsScreen = document.querySelector('.results-screen');
+        const branchCards = document.querySelectorAll('.branch-card');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionElement = document.getElementById('current-question');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackElement = document.getElementById('feedback');
+        const finalScoreElement = document.getElementById('final-score');
+        const resultMessageElement = document.getElementById('result-message');
+        const resultsSummaryElement = document.getElementById('results-summary');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Event Listeners
+        branchCards.forEach(card => {
+            card.addEventListener('click', () => {
+                currentBranch = card.getAttribute('data-branch');
+                startQuiz(currentBranch);
+            });
+        });
+
+        prevBtn.addEventListener('click', goToPreviousQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Funciones
+        function startQuiz(branch) {
+            currentBranch = branch;
+            currentQuestions = [...questionsDatabase[branch]];
+            currentQuestionIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            score = 0;
+            
+            selectionScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            
+            totalQuestionsElement.textContent = currentQuestions.length;
+            updateQuestion();
+        }
+
+        function updateQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            
+            // Actualizar contador
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            
+            // Actualizar barra de progreso
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                
+                // Marcar si ya fue seleccionada
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Actualizar botones de navegación
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                nextBtn.textContent = 'Finalizar Exploración';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+            }
+            
+            // Si ya respondió esta pregunta, mostrar retroalimentación
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showFeedback();
+            }
+        }
+
+        function selectOption(optionIndex) {
+            // Solo permitir selección si no ha respondido aún
+            if (userAnswers[currentQuestionIndex] === null) {
+                userAnswers[currentQuestionIndex] = optionIndex;
+                
+                // Actualizar visualización de opciones
+                const options = document.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.classList.remove('selected');
+                    if (index === optionIndex) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                // Mostrar retroalimentación
+                showFeedback();
+            }
+        }
+
+        function showFeedback() {
+            const question = currentQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === question.correct;
+            
+            // Actualizar visualización de opciones
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                option.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar explicación
+            feedbackElement.textContent = question.explanation;
+            feedbackElement.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            feedbackElement.style.display = 'block';
+        }
+
+        function goToPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                updateQuestion();
+            }
+        }
+
+        function goToNextQuestion() {
+            // Verificar que haya respondido la pregunta actual
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert('Por favor, selecciona una respuesta antes de continuar.');
+                return;
+            }
+            
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                updateQuestion();
+            } else {
+                // Calcular puntuación
+                score = 0;
+                userAnswers.forEach((answer, index) => {
+                    if (answer === currentQuestions[index].correct) {
+                        score++;
+                    }
+                });
+                
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultsScreen.classList.add('active');
+            
+            // Mostrar puntuación
+            finalScoreElement.textContent = `${score}/${currentQuestions.length}`;
+            
+            // Mostrar mensaje según puntuación
+            const percentage = (score / currentQuestions.length) * 100;
+            if (percentage >= 90) {
+                resultMessageElement.textContent = '¡Eres un Genio de la Biología! Dominas completamente esta área';
+            } else if (percentage >= 70) {
+                resultMessageElement.textContent = '¡Excelente trabajo científico! Tienes grandes conocimientos biológicos';
+            } else if (percentage >= 50) {
+                resultMessageElement.textContent = '¡Buena exploración! Tienes bases sólidas para seguir aprendiendo';
+            } else {
+                resultMessageElement.textContent = '¡Sigue investigando! La biología es un mundo fascinante por descubrir';
+            }
+            
+            // Mostrar resumen de respuestas
+            resultsSummaryElement.innerHTML = '';
+            currentQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+                resultItem.innerHTML = `
+                    <p><strong>Pregunta ${index + 1}:</strong> ${question.question}</p>
+                    <p><strong>Tu respuesta:</strong> ${question.options[userAnswer]}</p>
+                    ${!isCorrect ? `<p><strong>Respuesta correcta:</strong> ${question.options[question.correct]}</p>` : ''}
+                    <p><strong>Explicación:</strong> ${question.explanation}</p>
+                `;
+                
+                resultsSummaryElement.appendChild(resultItem);
+            });
+        }
+
+        function restartQuiz() {
+            resultsScreen.classList.remove('active');
+            selectionScreen.classList.add('active');
+        }
+    </script>
+    <video autoplay loop muted id="video_background">
+                <source src="video3.mp4" type="video/mp4">
+                <source src="video3.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+            </video>
+</body>
+</html>

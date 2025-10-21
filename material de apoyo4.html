@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas Interactivas de Historia Universal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .selection-screen, .quiz-screen, .results-screen {
+            display: none;
+        }
+        
+        .selection-screen.active, .quiz-screen.active, .results-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .branch-selection {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .branch-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            width: 280px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .branch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .branch-card:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .branch-card:hover {
+            transform: translateY(-10px);
+            border-color: #fff;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .branch-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+        
+        .branch-title {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .branch-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #ffd700;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .option.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            margin: 25px 0;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-counter {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #ffd700;
+        }
+        
+        .results-container {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .score {
+            font-size: 5rem;
+            margin: 30px 0;
+            color: #4CAF50;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .result-message {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            color: #ffd700;
+        }
+        
+        .feedback {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .feedback.correct {
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            border-left: 5px solid #f44336;
+        }
+        
+        .results-summary {
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 30px 0;
+            padding-right: 10px;
+        }
+        
+        .results-summary::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .results-summary::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        .results-summary::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 4px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .branch-card {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+        }
+            #video_background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            background-size: cover;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Viaje a Través del Tiempo</h1>
+            <p class="subtitle">Descubre los misterios del universo y las civilizaciones antiguas</p>
+        </header>
+        
+        <!-- Pantalla de selección de rama -->
+        <div class="selection-screen active">
+            <div class="branch-selection">
+                <div class="branch-card" data-branch="origen-universo">
+                    <div class="branch-icon">🌌</div>
+                    <h3 class="branch-title">Origen del Universo</h3>
+                    <p class="branch-description">Desde el Big Bang hasta la formación de galaxias y sistemas planetarios</p>
+                </div>
+                
+                <div class="branch-card" data-branch="edad-antigua">
+                    <div class="branch-icon">🏛️</div>
+                    <h3 class="branch-title">Edad Antigua</h3>
+                    <p class="branch-description">Civilizaciones mesopotámicas, egipcia, griega y romana</p>
+                </div>
+                
+                <div class="branch-card" data-branch="edad-media">
+                    <div class="branch-icon">⚔️</div>
+                    <h3 class="branch-title">Edad Media</h3>
+                    <p class="branch-description">Feudalismo, cruzadas, arte gótico y el resurgir de las ciudades</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla del cuestionario -->
+        <div class="quiz-screen">
+            <div class="question-counter">
+                Pregunta <span id="current-question">1</span> de <span id="total-questions">10</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <h2 class="question-text" id="question-text">¿Cuál es la teoría más aceptada sobre el origen del universo?</h2>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Las opciones se generarán dinámicamente -->
+                </div>
+                
+                <div class="feedback" id="feedback" style="display: none;">
+                    <!-- La retroalimentación se mostrará aquí -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-btn" disabled>← Anterior</button>
+                <button id="next-btn">Siguiente →</button>
+            </div>
+        </div>
+        
+        <!-- Pantalla de resultados -->
+        <div class="results-screen">
+            <div class="results-container">
+                <h2>¡Expedición Completa!</h2>
+                <div class="score pulse" id="final-score">0/10</div>
+                <p class="result-message" id="result-message">¡Eres un verdadero historiador!</p>
+                
+                <div class="results-summary" id="results-summary">
+                    <!-- El resumen de resultados se generará aquí -->
+                </div>
+                
+                <button id="restart-btn">Emprender Nueva Expedición</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de preguntas por rama (10 preguntas cada una)
+        const questionsDatabase = {
+            "origen-universo": [
+                {
+                    question: "¿Cuál es la teoría más aceptada sobre el origen del universo?",
+                    options: [
+                        "Teoría del Big Bang",
+                        "Teoría del Estado Estacionario",
+                        "Teoría del Universo Oscilante",
+                        "Teoría del Multiverso"
+                    ],
+                    correct: 0,
+                    explanation: "La teoría del Big Bang es la más aceptada por la comunidad científica. Propone que el universo comenzó hace aproximadamente 13,800 millones de años desde un estado extremadamente denso y caliente."
+                },
+                {
+                    question: "¿Qué evidencia respalda la teoría del Big Bang?",
+                    options: [
+                        "La radiación cósmica de fondo",
+                        "El movimiento de los planetas",
+                        "Las mareas oceánicas",
+                        "La formación de montañas"
+                    ],
+                    correct: 0,
+                    explanation: "La radiación cósmica de fondo, descubierta en 1965, es considerada una de las pruebas más sólidas del Big Bang, ya que representa el 'eco' del universo primitivo."
+                },
+                {
+                    question: "¿Qué elementos se formaron principalmente durante los primeros minutos del universo?",
+                    options: [
+                        "Hidrógeno y helio",
+                        "Oxígeno y carbono",
+                        "Hierro y níquel",
+                        "Uranio y plutonio"
+                    ],
+                    correct: 0,
+                    explanation: "Durante la nucleosíntesis primordial, en los primeros minutos después del Big Bang, se formaron principalmente hidrógeno (75%) y helio (25%)."
+                },
+                {
+                    question: "¿Qué son las galaxias?",
+                    options: [
+                        "Enormes agrupaciones de estrellas, gas y polvo",
+                        "Planetas gigantes con anillos",
+                        "Estrellas individuales muy brillantes",
+                        "Agujeros negros supermasivos"
+                    ],
+                    correct: 0,
+                    explanation: "Las galaxias son sistemas masivos compuestos por miles de millones de estrellas, nubes de gas, polvo cósmico y materia oscura, unidas por la gravedad."
+                },
+                {
+                    question: "¿Qué es la materia oscura?",
+                    options: [
+                        "Materia que no emite luz pero ejerce gravedad",
+                        "Polvo interestelar que bloquea la luz",
+                        "Agujeros negros inactivos",
+                        "Estrellas muertas y frías"
+                    ],
+                    correct: 0,
+                    explanation: "La materia oscura es un tipo de materia que no interactúa con la luz pero cuya presencia se infiere por sus efectos gravitacionales en las galaxias."
+                },
+                {
+                    question: "¿Cuándo se formó nuestro sistema solar?",
+                    options: [
+                        "Hace aproximadamente 4,600 millones de años",
+                        "Hace 13,800 millones de años",
+                        "Hace 1,000 millones de años",
+                        "Hace 10,000 años"
+                    ],
+                    correct: 0,
+                    explanation: "El sistema solar se formó hace unos 4,600 millones de años a partir de una nube molecular en la Vía Láctea."
+                },
+                {
+                    question: "¿Qué es un agujero negro?",
+                    options: [
+                        "Región del espacio con gravedad tan intensa que nada puede escapar",
+                        "Estrella muy densa y fría",
+                        "Planeta gigante gaseoso",
+                        "Galaxia en formación"
+                    ],
+                    correct: 0,
+                    explanation: "Un agujero negro es una región del espacio-tiempo donde la gravedad es tan fuerte que ni siquiera la luz puede escapar de ella."
+                },
+                {
+                    question: "¿Qué proceso genera la energía en las estrellas?",
+                    options: [
+                        "Fusión nuclear",
+                        "Fisión nuclear",
+                        "Combustión química",
+                        "Energía gravitacional"
+                    ],
+                    correct: 0,
+                    explanation: "Las estrellas generan energía mediante la fusión nuclear, donde los núcleos de hidrógeno se combinan para formar helio, liberando enormes cantidades de energía."
+                },
+                {
+                    question: "¿Qué es la Vía Láctea?",
+                    options: [
+                        "Nuestra galaxia",
+                        "Un cúmulo estelar cercano",
+                        "Una nebulosa planetaria",
+                        "Un sistema solar lejano"
+                    ],
+                    correct: 0,
+                    explanation: "La Vía Láctea es la galaxia espiral que contiene nuestro sistema solar, con aproximadamente 100,000 millones de estrellas."
+                },
+                {
+                    question: "¿Qué predice la teoría de la relatividad general sobre el universo?",
+                    options: [
+                        "Que el espacio-tiempo se curva por la masa",
+                        "Que el tiempo es absoluto",
+                        "Que la gravedad es una fuerza como las demás",
+                        "Que el universo es estático"
+                    ],
+                    correct: 0,
+                    explanation: "La teoría de la relatividad general de Einstein establece que la presencia de masa curva el espacio-tiempo, y esta curvatura es lo que percibimos como gravedad."
+                }
+            ],
+            "edad-antigua": [
+                {
+                    question: "¿Dónde surgieron las primeras civilizaciones?",
+                    options: [
+                        "En Mesopotamia",
+                        "En América del Norte",
+                        "En Australia",
+                        "En Europa del Norte"
+                    ],
+                    correct: 0,
+                    explanation: "Las primeras civilizaciones surgieron en Mesopotamia (actual Irak) alrededor del 4000 a.C., con los sumerios desarrollando la escritura cuneiforme."
+                },
+                {
+                    question: "¿Qué construyeron los antiguos egipcios para sus faraones?",
+                    options: [
+                        "Pirámides",
+                        "Acueductos",
+                        "Anfiteatros",
+                        "Catedrales"
+                    ],
+                    correct: 0,
+                    explanation: "Los egipcios construyeron imponentes pirámides como tumbas para sus faraones, siendo las de Giza las más famosas."
+                },
+                {
+                    question: "¿Qué contribución importante hicieron los fenicios?",
+                    options: [
+                        
+                        "La democracia",
+                        "El alfabeto",
+                        "El código de leyes",
+                        "La filosofía"
+                    ],
+                    correct: 1,
+                    explanation: "Los fenicios desarrollaron uno de los primeros alfabetos, que influyó en el griego y luego en el latín, sentando las bases de muchos sistemas de escritura modernos."
+                },
+                {
+                    question: "¿Quién fue Alejandro Magno?",
+                    options: [
+                        
+                        "Filósofo griego",
+                        "Rey macedonio que conquistó un vasto imperio",
+                        "Emperador romano",
+                        "Faraón egipcio"
+                    ],
+                    correct: 1,
+                    explanation: "Alejandro Magno, rey de Macedonia, creó uno de los imperios más grandes de la antigüedad, extendiendo la cultura griega hasta la India."
+                },
+                {
+                    question: "¿Qué era el Senado en la antigua Roma?",
+                    options: [
+                        
+                        "Un ejército profesional",
+                        "Un templo principal",
+                        "Una asamblea de ancianos que gobernaba",
+                        "Un mercado público"
+                    ],
+                    correct: 2,
+                    explanation: "El Senado romano era la institución política más importante, compuesta por los hombres más influyentes de Roma, que asesoraba a los magistrados y dirigía la política exterior."
+                },
+                {
+                    question: "¿Qué construyeron los romanos para transportar agua?",
+                    options: [
+                        "Puentes colgantes",
+                        "Carreteras de madera",
+                        "Acueductos",
+                        "Túneles subterráneos",
+                        
+                    ],
+                    correct: 2,
+                    explanation: "Los romanos construyeron impresionantes acueductos que transportaban agua desde fuentes distantes hasta las ciudades, demostrando su avanzada ingeniería."
+                },
+                {
+                    question: "¿Dónde se desarrolló la civilización del Valle del Indo?",
+                    options: [
+                        "En el actual Pakistán y noroeste de India",
+                        "En China",
+                        "En Egipto",
+                        "En Grecia"
+                    ],
+                    correct: 0,
+                    explanation: "La civilización del Valle del Indo (Harappa) se desarrolló alrededor del 2600-1900 a.C. en lo que hoy es Pakistán y el noroeste de India, con ciudades planificadas y sistemas de drenaje avanzados."
+                },
+                {
+                    question: "¿Qué filósofo griego fue maestro de Alejandro Magno?",
+                    options: [
+                        "Aristóteles",
+                        "Sócrates",
+                        "Platón",
+                        "Pitágoras"
+                    ],
+                    correct: 0,
+                    explanation: "Aristóteles, discípulo de Platón, fue el tutor de Alejandro Magno durante tres años, influyendo profundamente en su visión del mundo."
+                },
+                {
+                    question: "¿Qué fue el Código de Hammurabi?",
+                    options: [
+                        "Uno de los primeros conjuntos de leyes escritas",
+                        "Un sistema de escritura egipcio",
+                        "Un método de construcción griego",
+                        "Un calendario romano"
+                    ],
+                    correct: 0,
+                    explanation: "El Código de Hammurabi, creado alrededor del 1754 a.C. en Babilonia, es uno de los conjuntos de leyes más antiguos que se conocen, basado en la ley del talión."
+                },
+                {
+                    question: "¿Qué civilización desarrolló el concepto de democracia?",
+                    options: [
+                        "La antigua Grecia, específicamente Atenas",
+                        "El Imperio Romano",
+                        "El Antiguo Egipto",
+                        "La civilización Persa"
+                    ],
+                    correct: 0,
+                    explanation: "La democracia surgió en la Atenas clásica alrededor del siglo V a.C., donde los ciudadanos varones adultos podían participar directamente en las decisiones políticas."
+                }
+            ],
+            "edad-media": [
+                {
+                    question: "¿Qué evento marca tradicionalmente el inicio de la Edad Media?",
+                    options: [
+                       
+                        "El nacimiento de Jesucristo",
+                        "La caída del Imperio Romano de Occidente (476 d.C.)",
+                        "El descubrimiento de América",
+                        "La invención de la imprenta"
+                    ],
+                    correct: 1,
+                    explanation: "La Edad Media comienza tradicionalmente con la caída del Imperio Romano de Occidente en el año 476 d.C., cuando Odoacro depuso al último emperador romano."
+                },
+                {
+                    question: "¿Qué fue el feudalismo?",
+                    options: [
+                        
+                        "Un tipo de arte religioso",
+                        "Sistema político y económico basado en la tierra",
+                        "Un movimiento filosófico",
+                        "Una forma de gobierno democrático"
+                    ],
+                    correct: 1,
+                    explanation: "El feudalismo fue el sistema político, económico y social predominante en la Europa medieval, basado en relaciones de vasallaje y el uso de tierras (feudos) como principal forma de riqueza."
+                },
+                {
+                    question: "¿Qué fueron las Cruzadas?",
+                    options: [
+                        
+                        "Guerras entre reinos europeos",
+                        "Revueltas campesinas",
+                        "Migraciones de pueblos bárbaros",
+                        "Expediciones militares cristianas a Tierra Santa"
+                    ],
+                    correct: 3,
+                    explanation: "Las Cruzadas fueron una serie de campañas militares impulsadas por la Iglesia católica entre los siglos XI y XIII para recuperar Tierra Santa del control musulmán."
+                },
+                {
+                    question: "¿Qué pandemia devastó Europa en el siglo XIV?",
+                    options: [
+                       
+                        "La gripe española",
+                        "La viruela",
+                        "La Peste Negra",
+                        "El cólera"
+                    ],
+                    correct: 2,
+                    explanation: "La Peste Negra (1347-1351) mató a aproximadamente un tercio de la población europea, causando profundos cambios sociales y económicos."
+                },
+                {
+                    question: "¿Qué fue la Carta Magna?",
+                    options: [
+                        
+                        "Un mapa medieval de Europa",
+                        "Un tratado de teología",
+                        "Un código de leyes francés",
+                        "Documento que limitaba el poder del rey inglés"
+
+                    ],
+                    correct: 3,
+                    explanation: "La Carta Magna, firmada en 1215 por el rey Juan I de Inglaterra, estableció que el rey estaba sujeto a la ley y sentó las bases de los derechos constitucionales."
+                },
+                {
+                    question: "¿Qué estilo arquitectónico predominó en las catedrales medievales?",
+                    options: [
+                        "El gótico",
+                        "El barroco",
+                        "El renacentista",
+                        "El románico"
+                    ],
+                    correct: 0,
+                    explanation: "El estilo gótico, con sus arbotantes, vidrieras y altísimas bóvedas, caracterizó las grandes catedrales medievales como Notre Dame de París y la de Chartres."
+                },
+                {
+                    question: "¿Qué imperio continuó existiendo en Oriente durante la Edad Media?",
+                    options: [
+                        
+                        "El Imperio Persa",
+                        "El Imperio Egipcio",
+                        "El Imperio Bizantino",
+                        "El Imperio Babilónico"
+                    ],
+                    correct: 2,
+                    explanation: "El Imperio Bizantino, con capital en Constantinopla, fue la continuación del Imperio Romano en Oriente y sobrevivió toda la Edad Media hasta 1453."
+                },
+                {
+                    question: "¿Quién fue Carlomagno?",
+                    options: [
+                        
+                        "Un papa medieval",
+                        "Rey franco coronado emperador en el 800",
+                        "Un filósofo árabe",
+                        "Un líder vikingo"
+                    ],
+                    correct: 1,
+                    explanation: "Carlomagno, rey de los francos, fue coronado emperador por el papa León III en el año 800, unificando gran parte de Europa Occidental y promoviendo el Renacimiento carolingio."
+                },
+                {
+                    question: "¿Qué fueron las universidades medievales?",
+                    options: [
+                        "Monasterios dedicados al estudio",
+                        "Instituciones de educación superior",
+                        "Gremios de artesanos",
+                        "Cortes reales"
+                    ],
+                    correct: 1,
+                    explanation: "Las universidades medievales, como las de Bolonia, París y Oxford, surgieron como corporaciones de maestros y estudiantes que organizaban la enseñanza superior."
+                },
+                {
+                    question: "¿Qué evento marca tradicionalmente el fin de la Edad Media?",
+                    options: [
+                        "La caída de Constantinopla (1453)",
+                        "El descubrimiento de América (1492)",
+                        "La invención de la imprenta (1440)",
+                        "Todas las anteriores"
+                    ],
+                    correct: 3,
+                    explanation: "El fin de la Edad Media suele situarse alrededor de 1453 (caída de Constantinopla), 1492 (descubrimiento de América) o con la invención de la imprenta, eventos que marcaron la transición hacia la Edad Moderna."
+                }
+            ]
+        };
+
+        // Variables de estado
+        let currentBranch = '';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        // Elementos DOM
+        const selectionScreen = document.querySelector('.selection-screen');
+        const quizScreen = document.querySelector('.quiz-screen');
+        const resultsScreen = document.querySelector('.results-screen');
+        const branchCards = document.querySelectorAll('.branch-card');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionElement = document.getElementById('current-question');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackElement = document.getElementById('feedback');
+        const finalScoreElement = document.getElementById('final-score');
+        const resultMessageElement = document.getElementById('result-message');
+        const resultsSummaryElement = document.getElementById('results-summary');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Event Listeners
+        branchCards.forEach(card => {
+            card.addEventListener('click', () => {
+                currentBranch = card.getAttribute('data-branch');
+                startQuiz(currentBranch);
+            });
+        });
+
+        prevBtn.addEventListener('click', goToPreviousQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Funciones
+        function startQuiz(branch) {
+            currentBranch = branch;
+            currentQuestions = [...questionsDatabase[branch]];
+            currentQuestionIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            score = 0;
+            
+            selectionScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            
+            totalQuestionsElement.textContent = currentQuestions.length;
+            updateQuestion();
+        }
+
+        function updateQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            
+            // Actualizar contador
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            
+            // Actualizar barra de progreso
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                
+                // Marcar si ya fue seleccionada
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Actualizar botones de navegación
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                nextBtn.textContent = 'Finalizar Expedición';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+            }
+            
+            // Si ya respondió esta pregunta, mostrar retroalimentación
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showFeedback();
+            }
+        }
+
+        function selectOption(optionIndex) {
+            // Solo permitir selección si no ha respondido aún
+            if (userAnswers[currentQuestionIndex] === null) {
+                userAnswers[currentQuestionIndex] = optionIndex;
+                
+                // Actualizar visualización de opciones
+                const options = document.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.classList.remove('selected');
+                    if (index === optionIndex) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                // Mostrar retroalimentación
+                showFeedback();
+            }
+        }
+
+        function showFeedback() {
+            const question = currentQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === question.correct;
+            
+            // Actualizar visualización de opciones
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                option.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar explicación
+            feedbackElement.textContent = question.explanation;
+            feedbackElement.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            feedbackElement.style.display = 'block';
+        }
+
+        function goToPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                updateQuestion();
+            }
+        }
+
+        function goToNextQuestion() {
+            // Verificar que haya respondido la pregunta actual
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert('Por favor, selecciona una respuesta antes de continuar.');
+                return;
+            }
+            
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                updateQuestion();
+            } else {
+                // Calcular puntuación
+                score = 0;
+                userAnswers.forEach((answer, index) => {
+                    if (answer === currentQuestions[index].correct) {
+                        score++;
+                    }
+                });
+                
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultsScreen.classList.add('active');
+            
+            // Mostrar puntuación
+            finalScoreElement.textContent = `${score}/${currentQuestions.length}`;
+            
+            // Mostrar mensaje según puntuación
+            const percentage = (score / currentQuestions.length) * 100;
+            if (percentage >= 90) {
+                resultMessageElement.textContent = '¡Eres un Maestro del Tiempo! Dominas completamente este período histórico';
+            } else if (percentage >= 70) {
+                resultMessageElement.textContent = '¡Excelente expedición! Tienes un gran conocimiento histórico';
+            } else if (percentage >= 50) {
+                resultMessageElement.textContent = '¡Buen viaje! Tienes bases sólidas pero puedes explorar más';
+            } else {
+                resultMessageElement.textContent = '¡Sigue explorando! Cada viaje te hará un mejor historiador';
+            }
+            
+            // Mostrar resumen de respuestas
+            resultsSummaryElement.innerHTML = '';
+            currentQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+                resultItem.innerHTML = `
+                    <p><strong>Pregunta ${index + 1}:</strong> ${question.question}</p>
+                    <p><strong>Tu respuesta:</strong> ${question.options[userAnswer]}</p>
+                    ${!isCorrect ? `<p><strong>Respuesta correcta:</strong> ${question.options[question.correct]}</p>` : ''}
+                    <p><strong>Explicación:</strong> ${question.explanation}</p>
+                `;
+                
+                resultsSummaryElement.appendChild(resultItem);
+            });
+        }
+
+        function restartQuiz() {
+            resultsScreen.classList.remove('active');
+            selectionScreen.classList.add('active');
+        }
+    </script>
+    <video autoplay loop muted id="video_background">
+                <source src="video2.mp4" type="video/mp4">
+                <source src="video2.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+    </video>
+</body>
+</html>

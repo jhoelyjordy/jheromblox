@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas Interactivas de Física</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .selection-screen, .quiz-screen, .results-screen {
+            display: none;
+        }
+        
+        .selection-screen.active, .quiz-screen.active, .results-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .branch-selection {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .branch-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            width: 250px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .branch-card:hover {
+            transform: translateY(-10px);
+            border-color: #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .branch-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        
+        .branch-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .branch-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .option.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.3);
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.3);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-counter {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .results-container {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .score {
+            font-size: 4rem;
+            margin: 20px 0;
+            color: #4CAF50;
+        }
+        
+        .result-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+        
+        .feedback.correct {
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .feedback.incorrect {
+            border-left: 5px solid #f44336;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .branch-card {
+                width: 100%;
+            }
+        }
+        #video_background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            background-size: cover;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pruebas Interactivas de Física</h1>
+            <p class="subtitle">Pon a prueba tus conocimientos de física de forma divertida</p>
+        </header>
+        
+        <!-- Pantalla de selección de rama -->
+        <div class="selection-screen active">
+            <div class="branch-selection">
+                <div class="branch-card" data-branch="cinematica">
+                    <div class="branch-icon">📈</div>
+                    <h3 class="branch-title">Cinemática</h3>
+                    <p class="branch-description">Estudio del movimiento sin considerar sus causas</p>
+                </div>
+                
+                <div class="branch-card" data-branch="dinamica">
+                    <div class="branch-icon">⚡</div>
+                    <h3 class="branch-title">Dinámica</h3>
+                    <p class="branch-description">Estudio de las causas del movimiento</p>
+                </div>
+                
+                <div class="branch-card" data-branch="estatica">
+                    <div class="branch-icon">🏗️</div>
+                    <h3 class="branch-title">Estática</h3>
+                    <p class="branch-description">Estudio de los cuerpos en equilibrio</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla del cuestionario -->
+        <div class="quiz-screen">
+            <div class="question-counter">
+                Pregunta <span id="current-question">1</span> de <span id="total-questions">5</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <div class="question-container">
+                <h2 class="question-text" id="question-text">¿Cuál es la fórmula de la velocidad?</h2>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Las opciones se generarán dinámicamente -->
+                </div>
+                
+                <div class="feedback" id="feedback" style="display: none;">
+                    <!-- La retroalimentación se mostrará aquí -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-btn" disabled>Anterior</button>
+                <button id="next-btn">Siguiente</button>
+            </div>
+        </div>
+        
+        <!-- Pantalla de resultados -->
+        <div class="results-screen">
+            <div class="results-container">
+                <h2>¡Prueba Completada!</h2>
+                <div class="score" id="final-score">0/5</div>
+                <p class="result-message" id="result-message">¡Buen trabajo!</p>
+                
+                <div id="results-summary">
+                    <!-- El resumen de resultados se generará aquí -->
+                </div>
+                
+                <button id="restart-btn">Realizar Otra Prueba</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de preguntas por rama
+        const questionsDatabase = {
+            cinematica: [
+                {
+                    question: "¿Cuál es la fórmula para calcular la velocidad media?",
+                    options: [
+                        
+                        "v = a*t",
+                        "v = m*a",
+                        "v = d/t",
+                        "v = F/m"
+                    ],
+                    correct: 2,
+                    explanation: "La velocidad media se calcula como la distancia recorrida dividida entre el tiempo empleado: v = d/t"
+                },
+                {
+                    question: "Un automóvil acelera de 0 a 100 km/h en 10 segundos. ¿Cuál es su aceleración en m/s²?",
+                    options: [
+                        "27.8 m/s²",
+                        "5.56 m/s²",
+                        "10 m/s²",
+                        "2.78 m/s²"
+                        
+                    ],
+                    correct: 3,
+                    explanation: "Primero convertimos 100 km/h a m/s: 100/3.6 = 27.78 m/s. Luego a = Δv/Δt = 27.78/10 = 2.78 m/s²"
+                },
+                {
+                    question: "¿Qué tipo de movimiento describe un objeto lanzado horizontalmente desde cierta altura?",
+                    options: [
+                        "Movimiento rectilíneo uniforme",
+                        "Movimiento parabólico",
+                        "Movimiento circular",
+                        "Movimiento armónico simple"
+                    ],
+                    correct: 1,
+                    explanation: "Un objeto lanzado horizontalmente describe un movimiento parabólico debido a la combinación de movimiento horizontal uniforme y caída libre vertical."
+                },
+                {
+                    question: "Si un cuerpo se mueve con velocidad constante, ¿cuál es su aceleración?",
+                    options: [
+                        "Mayor que cero",
+                        "Igual a cero",
+                        "Negativa",
+                        "Variable"
+                    ],
+                    correct: 1,
+                    explanation: "Si la velocidad es constante, no hay cambio en la velocidad, por lo tanto la aceleración es cero."
+                },
+                {
+                    question: "¿Qué representa el área bajo la curva en un gráfico velocidad-tiempo?",
+                    options: [
+                        "La aceleración",
+                        "La distancia recorrida",
+                        "La velocidad media",
+                        "La fuerza aplicada"
+                    ],
+                    correct: 1,
+                    explanation: "El área bajo la curva en un gráfico v-t representa el desplazamiento o distancia recorrida por el objeto."
+                }
+            ],
+            dinamica: [
+                {
+                    question: "Según la Segunda Ley de Newton, ¿cómo se relaciona la fuerza con la masa y la aceleración?",
+                    options: [
+                        "F = m/a",
+                        "F = m*a",
+                        "F = a/m",
+                        "F = m + a"
+                    ],
+                    correct: 1,
+                    explanation: "La Segunda Ley de Newton establece que F = m*a, donde F es la fuerza, m la masa y a la aceleración."
+                },
+                {
+                    question: "¿Qué fuerza evita que un objeto se deslice sobre una superficie horizontal?",
+                    options: [
+                        "Fuerza normal",
+                        "Fuerza de fricción",
+                        "Fuerza gravitacional",
+                        "Fuerza centrípeta"
+                    ],
+                    correct: 1,
+                    explanation: "La fuerza de fricción es la que se opone al movimiento relativo entre superficies en contacto."
+                },
+                {
+                    question: "Si aplicas la misma fuerza a dos objetos con masas diferentes, ¿cuál acelerará más?",
+                    options: [
+                        "El de mayor masa",
+                        "El de menor masa",
+                        "Ambos acelerarán igual",
+                        "Depende de la forma de los objetos"
+                    ],
+                    correct: 1,
+                    explanation: "Según F = m*a, para una fuerza constante, la aceleración es inversamente proporcional a la masa. Por lo tanto, el objeto con menor masa acelerará más."
+                },
+                {
+                    question: "¿Qué principio físico explica por qué al saltar de un bote a la orilla, el bote se mueve en dirección contraria?",
+                    options: [
+                        "Principio de Arquímedes",
+                        "Tercera Ley de Newton",
+                        "Principio de Pascal",
+                        "Ley de Hooke"
+                    ],
+                    correct: 1,
+                    explanation: "La Tercera Ley de Newton establece que por cada acción hay una reacción igual y opuesta. Al empujar el bote hacia atrás para saltar, el bote te empuja hacia adelante."
+                },
+                {
+                    question: "Un astronauta en el espacio exterior lanza una pelota. ¿Qué le sucede al astronauta?",
+                    options: [
+                        "Permanece en la misma posición",
+                        "Se mueve en dirección opuesta a la pelota",
+                        "Gira sobre sí mismo",
+                        "Se mueve en la misma dirección que la pelota"
+                    ],
+                    correct: 1,
+                    explanation: "Por la Tercera Ley de Newton, al lanzar la pelota hacia adelante, el astronauta experimenta una fuerza igual y opuesta que lo mueve hacia atrás."
+                }
+            ],
+            estatica: [
+                {
+                    question: "Para que un cuerpo esté en equilibrio estático, ¿qué condición debe cumplirse?",
+                    options: [
+                        "ΣF = 0 y ΣM = 0",
+                        "ΣF > 0 y ΣM > 0",
+                        "ΣF = 0 y ΣM > 0",
+                        "ΣF > 0 y ΣM = 0"
+                    ],
+                    correct: 0,
+                    explanation: "Para equilibrio estático, la suma de todas las fuerzas (ΣF) debe ser cero y la suma de todos los momentos (ΣM) también debe ser cero."
+                },
+                {
+                    question: "¿Qué es el centro de gravedad de un cuerpo?",
+                    options: [
+                        "El punto donde se aplica el peso del cuerpo",
+                        "El punto más pesado del cuerpo",
+                        "El punto geométrico central del cuerpo",
+                        "El punto de apoyo del cuerpo"
+                    ],
+                    correct: 0,
+                    explanation: "El centro de gravedad es el punto donde puede considerarse que actúa todo el peso del cuerpo para efectos de equilibrio."
+                },
+                {
+                    question: "Una escalera apoyada contra una pared forma un ángulo con el suelo. ¿Dónde está el centro de gravedad?",
+                    options: [
+                        "En el punto de contacto con el suelo",
+                        "En el punto de contacto con la pared",
+                        "En el punto medio de la escalera",
+                        "Depende del material de la escalera"
+                    ],
+                    correct: 2,
+                    explanation: "Para una escalera uniforme, el centro de gravedad se encuentra en su punto medio, independientemente de su inclinación."
+                },
+                {
+                    question: "¿Qué tipo de palanca es un balancín?",
+                    options: [
+                        
+                        "Palanca de segunda clase",
+                        "Palanca de tercera clase",
+                        "No es una palanca",
+                         "Palanca de primera clase"
+                    ],
+                    correct: 3,
+                    explanation: "Un balancín es una palanca de primera clase porque el punto de apoyo está entre la fuerza aplicada y la resistencia."
+                },
+                {
+                    question: "Si aumentas la base de apoyo de un objeto, ¿qué sucede con su estabilidad?",
+                    options: [
+                        "Disminuye",
+                        "Aumenta",
+                        "Permanece igual",
+                        "Depende de la altura"
+                    ],
+                    correct: 1,
+                    explanation: "Al aumentar la base de apoyo, el objeto se vuelve más estable porque se necesita inclinarlo más para que su centro de gravedad salga de la base."
+                }
+            ]
+        };
+
+        // Variables de estado
+        let currentBranch = '';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        // Elementos DOM
+        const selectionScreen = document.querySelector('.selection-screen');
+        const quizScreen = document.querySelector('.quiz-screen');
+        const resultsScreen = document.querySelector('.results-screen');
+        const branchCards = document.querySelectorAll('.branch-card');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionElement = document.getElementById('current-question');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackElement = document.getElementById('feedback');
+        const finalScoreElement = document.getElementById('final-score');
+        const resultMessageElement = document.getElementById('result-message');
+        const resultsSummaryElement = document.getElementById('results-summary');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Event Listeners
+        branchCards.forEach(card => {
+            card.addEventListener('click', () => {
+                currentBranch = card.getAttribute('data-branch');
+                startQuiz(currentBranch);
+            });
+        });
+
+        prevBtn.addEventListener('click', goToPreviousQuestion);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Funciones
+        function startQuiz(branch) {
+            currentBranch = branch;
+            currentQuestions = [...questionsDatabase[branch]];
+            currentQuestionIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            score = 0;
+            
+            selectionScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            
+            totalQuestionsElement.textContent = currentQuestions.length;
+            updateQuestion();
+        }
+
+        function updateQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            
+            // Actualizar contador
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            
+            // Actualizar barra de progreso
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            
+            // Crear nuevas opciones
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                
+                // Marcar si ya fue seleccionada
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Actualizar botones de navegación
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                nextBtn.textContent = 'Siguiente';
+            }
+            
+            // Si ya respondió esta pregunta, mostrar retroalimentación
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showFeedback();
+            }
+        }
+
+        function selectOption(optionIndex) {
+            // Solo permitir selección si no ha respondido aún
+            if (userAnswers[currentQuestionIndex] === null) {
+                userAnswers[currentQuestionIndex] = optionIndex;
+                
+                // Actualizar visualización de opciones
+                const options = document.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.classList.remove('selected');
+                    if (index === optionIndex) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                // Mostrar retroalimentación
+                showFeedback();
+            }
+        }
+
+        function showFeedback() {
+            const question = currentQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isCorrect = userAnswer === question.correct;
+            
+            // Actualizar visualización de opciones
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                option.classList.remove('correct', 'incorrect');
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar explicación
+            feedbackElement.textContent = question.explanation;
+            feedbackElement.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            feedbackElement.style.display = 'block';
+        }
+
+        function goToPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                updateQuestion();
+            }
+        }
+
+        function goToNextQuestion() {
+            // Verificar que haya respondido la pregunta actual
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert('Por favor, selecciona una respuesta antes de continuar.');
+                return;
+            }
+            
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                updateQuestion();
+            } else {
+                // Calcular puntuación
+                score = 0;
+                userAnswers.forEach((answer, index) => {
+                    if (answer === currentQuestions[index].correct) {
+                        score++;
+                    }
+                });
+                
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultsScreen.classList.add('active');
+            
+            // Mostrar puntuación
+            finalScoreElement.textContent = `${score}/${currentQuestions.length}`;
+            
+            // Mostrar mensaje según puntuación
+            const percentage = (score / currentQuestions.length) * 100;
+            if (percentage >= 80) {
+                resultMessageElement.textContent = '¡Excelente! Eres un experto en ' + currentBranch;
+            } else if (percentage >= 60) {
+                resultMessageElement.textContent = '¡Buen trabajo! Tienes buenos conocimientos de ' + currentBranch;
+            } else if (percentage >= 40) {
+                resultMessageElement.textContent = 'No está mal, pero puedes mejorar en ' + currentBranch;
+            } else {
+                resultMessageElement.textContent = 'Sigue estudiando, ' + currentBranch + ' requiere más práctica';
+            }
+            
+            // Mostrar resumen de respuestas
+            resultsSummaryElement.innerHTML = '';
+            currentQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+                resultItem.innerHTML = `
+                    <p><strong>Pregunta ${index + 1}:</strong> ${question.question}</p>
+                    <p><strong>Tu respuesta:</strong> ${question.options[userAnswer]}</p>
+                    ${!isCorrect ? `<p><strong>Respuesta correcta:</strong> ${question.options[question.correct]}</p>` : ''}
+                    <p><strong>Explicación:</strong> ${question.explanation}</p>
+                `;
+                
+                resultsSummaryElement.appendChild(resultItem);
+            });
+        }
+
+        function restartQuiz() {
+            resultsScreen.classList.remove('active');
+            selectionScreen.classList.add('active');
+        }
+    </script>
+     <video autoplay loop muted id="video_background">
+                <source src="video4.mp4" type="video/mp4">
+                <source src="video4.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+     </video>
+</body>
+</html>

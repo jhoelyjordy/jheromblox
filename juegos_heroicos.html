@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Científica - Teoría Cuántica & Leyes de los Gases</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Pantalla de Inicio -->
+        <div id="pantalla-inicio" class="pantalla activa">
+            <div class="contenedor-titulo">
+                <h1>PRUEBA CIENTÍFICA AVANZADA</h1>
+                <h2>Teoría Cuántica & Leyes de los Gases</h2>
+            </div>
+
+            <div class="contenedor-botones-temas">
+                <div class="boton-tema" onclick="mostrarInfoTema('cuantica')">
+                    <div class="emoji">🌌</div>
+                    <div class="texto">TEORÍA CUÁNTICA</div>
+                    <div class="tooltip">Principios cuánticos, función de onda, principio de incertidumbre</div>
+                </div>
+                
+                <div class="boton-tema" onclick="mostrarInfoTema('gases')">
+                    <div class="emoji">💨</div>
+                    <div class="texto">LEYES DE LOS GASES</div>
+                    <div class="tooltip">Leyes de Boyle, Charles, gases ideales, termodinámica</div>
+                </div>
+            </div>
+
+            <button class="boton-iniciar" onclick="iniciarPrueba()">
+                🎯 INICIAR PRUEBA COMPLETA
+            </button>
+        </div>
+
+        <!-- Pantalla de Prueba -->
+        <div id="pantalla-prueba" class="pantalla">
+            <div class="cabecera-prueba">
+                <div id="info-pregunta" class="info-pregunta">Pregunta 1 de 6 - Teoría Cuántica</div>
+                <div class="barra-progreso">
+                    <div id="progreso" class="progreso"></div>
+                </div>
+            </div>
+
+            <div class="contenedor-pregunta">
+                <div id="texto-pregunta" class="texto-pregunta">
+                    ¿Cuál es la interpretación física de la función de onda Ψ en la ecuación de Schrödinger?
+                </div>
+
+                <div id="opciones" class="contenedor-opciones">
+                    <!-- Las opciones se generan dinámicamente -->
+                </div>
+            </div>
+
+            <div class="contenedor-botones">
+                <button id="boton-siguiente" class="boton-siguiente" onclick="siguientePregunta()">
+                    ➡️ Siguiente Pregunta
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="pantalla-resultados" class="pantalla">
+            <div class="contenedor-titulo">
+                <h1>🎓 RESULTADOS DE LA PRUEBA</h1>
+            </div>
+
+            <div id="contenedor-resultado" class="contenedor-resultado">
+                <!-- Los resultados se muestran aquí -->
+            </div>
+
+            <div class="contenedor-botones-resultados">
+                <button class="boton-reiniciar" onclick="reiniciarPrueba()">
+                    🔄 Realizar Otra Prueba
+                </button>
+                <button class="boton-salir" onclick="salir()">
+                    🚪 Salir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de información -->
+    <div id="modal-info" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar" onclick="cerrarModal()">&times;</span>
+            <h3 id="modal-titulo">Teoría Cuántica</h3>
+            <div id="modal-texto">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>

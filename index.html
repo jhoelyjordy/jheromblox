@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JheroMblox - Plataforma Educativa</title>
+    <style>
+        /* RESET Y ESTILOS GENERALES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .btn-link {
+            display: inline-block; /* Para que el botón tenga dimensiones */
+            padding: 10px 20px;    /* Espaciado interno */
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+            color: white;           /* Color del texto */
+            text-decoration: none;  /* Quita el subrayado del enlace */
+            border-radius: 5px;     /* Bordes redondeados */
+            border: none;           /* Sin borde */
+        }
+
+        .btn-link:hover {
+            background: linear-gradient(135deg, #00a1a2, #00c4c4); /* Degradado cian más oscuro */
+        }
+
+        #video_background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            background-size: cover;
+            overflow: hidden;
+        
+        }
+        .book-info {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .book-link {
+            display: block;
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: auto;
+        }
+        
+        .book-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #5100bb;
+            min-height: 40px;
+            border-bottom: 2px dashed #00cbcc; /* Color cian */
+            padding-bottom: 10px;
+
+        }
+        .book-author {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .book-description {
+            margin-bottom: 25px;
+            color: #555;
+            flex-grow: 1;
+        }
+        
+        .book-card {
+            background: rgba(1, 86, 112, 0.842);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(2, 1, 1, 0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a2a3a, #0d1117); /* Degradado cian oscuro */
+            color: #2d7cc2;
+            overflow-x: hidden;
+        }
+        
+        /* INTRO - AGUJERO NEGRO */
+        #introOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00010f, #001a22); /* Degradado cian oscuro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 1.5s ease;
+        }
+        
+        .Black__hole{
+            position: absolute;
+            left: 50%;
+            opacity: 0.9 ;
+            border: 2 px solid #222;
+            filter: blur(2 px);
+            shadow: 10 px #fff;
+            background: var(--hole);
+
+        }
+        .black-hole {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, #000 0%, #000 40%, #003f3f 70%, #008282 100%); /* Degradado cian */
+            box-shadow: 0 0 100px 20px rgba(0, 203, 204, 0.8),
+                        0 0 200px 40px rgba(0, 229, 229, 0.5),
+                        0 0 300px 60px rgba(56, 241, 241, 0.678); /* Colores cian */
+            animation: pulse 8s infinite alternate;
+            z-index: 10002;
+            cursor: pointer;
+        }
+        
+        .accretion-disk {
+            position: absolute;
+            width: 500px;
+            height: 80px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                #00cccc, 
+                #00a1a2, 
+                #00cccc, 
+                transparent); /* Degradado cian */
+            border-radius: 50%;
+            animation: rotate 15s linear infinite;
+            opacity: 0.7;
+            z-index: 10001;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: rgb(190, 254, 253); /* Color cian claro */
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+        
+        .logo-text {
+            font-size: 5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+                         0 0 40px rgba(0, 203, 204, 0.6),
+                         0 0 60px rgba(0, 203, 204, 0.4); /* Colores cian */
+            z-index: 10003;
+            letter-spacing: 5px;
+            text-align: center;
+        }
+        
+        .loading {
+            position: absolute;
+            bottom: 2rem;
+            font-size: 1rem;
+            color: #00a1a2; /* Color cian */
+            z-index: 10003;
+        }
+        
+        /* INTERFAZ PRINCIPAL */
+        #mainApp {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            letter-spacing: 2px;
+        }
+        
+        .header p {
+            margin-top: 10px;
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        
+        .tab-container {
+            display: flex;
+            background: linear-gradient(90deg, #00b881, #00ebb0); /* Degradado cian-verde */
+            padding: 0 20px;
+        }
+        .boton {
+          border: 30px solid #00a1a2; /* Color cian */
+          margin: 30px;;
+          padding: 20px; /*espacio alrededor texto*/
+          background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+          color: #ffffff; /*color texto*/
+          text-decoration: none; /*decoración texto*/
+          text-transform: uppercase; /*capitalización texto*/
+          font-family: 'Helvetica', sans-serif; /*tipografía texto*/
+          border-radius: 50px; /*bordes redondos*/
+        }
+        .tab {
+            padding: 18px 30px;
+            cursor: pointer;
+            color: #ecf0f1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab:hover {
+            background-color: rgba(0, 188, 156, 0.2); /* Color cian con transparencia */
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+            font-weight: bold;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+        }
+        
+        .content {
+            display: none;
+            padding: 30px;
+            background: linear-gradient(135deg, #37a2a5, #3782a5); /* Degradado cian */
+            min-height: 500px;
+            margin: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(33, 129, 129, 0.2);
+            color: #e6edf3;
+        }
+        
+        .content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content h2 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            color: #00e5e5; /* Color cian claro */
+            border-bottom: 2px solid #00b1b8;
+            padding-bottom: 10px;
+        }
+        
+        .content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .content img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #00848d, #00eeff); /* Degradado cian */
+            color: white;
+            margin-top: 30px;
+            font-size: 1em;
+        }
+        
+        /* BOTONES DE CURSOS */
+        .course-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .course-btn {
+            padding: 30px 20px;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.4em;
+            cursor: pointer;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-weight: bold;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+            z-index: 1;
+        }
+        
+        .course-btn span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .course-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .physics-btn {
+            background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .math-btn {
+            background-image: url('https://images.unsplash.com/photo-1635372722656-389f87a941b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .biology-btn {
+            background-image: url('https://images.unsplash.com/photo-1526930382372-67bf22c0fce2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .chemistry-btn {
+            background-image: url('https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .history-btn {
+            background-image: url('https://images.unsplash.com/photo-1505664194779-8beaceb93744?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        /* INTERFACES DE CURSOS */
+        .course-interface {
+            display: none;
+            padding: 30px;
+            background: linear-gradient(135deg, #252e42, #1c2333);
+            min-height: 500px;
+            margin: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            color: #e6edf3;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .back-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(0, 203, 204, 0.4); /* Color cian */
+        }
+        
+        /* ESTILOS PARA BOTONES DE TEMAS EN TODAS LAS MATERIAS */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .topic-btn {
+            padding: 40px 25px;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.6em;
+            cursor: pointer;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+            font-weight: bold;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .topic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+            z-index: 1;
+        }
+        
+        .topic-btn span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .topic-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* BOTONES DE FÍSICA */
+        .kinematics-btn {
+            background-image: url('https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1776&q=80');
+        }
+        
+        .dynamics-btn {
+            background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .statics-btn {
+            background-image: url('https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        /* BOTONES DE QUÍMICA */
+        .gases-btn {
+            background-image: url('https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .stoichiometry-btn {
+            background-image: url('https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .quantum-btn {
+            background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        /* BOTONES DE BIOLOGÍA */
+        .cell-biology-btn {
+            background-image: url('https://images.unsplash.com/photo-1530026405186-ed1f139313f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .genetics-btn {
+            background-image: url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .ecology-btn {
+            background-image: url('https://images.unsplash.com/photo-1476231682828-37e571bc172f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .biotechnology-btn {
+            background-image: url('https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        /* BOTONES DE HISTORIA */
+        .universe-origin-btn {
+            background-image: url('https://static.wikia.nocookie.net/wowpedia/images/8/85/Cosmic_Void_concept_art.jpg/revision/latest?cb=20230512204040');
+        }
+        
+        .ancient-age-btn {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNMnkEX1Q6ZJqbT0ckC6tD8xbyHBKX2TxnIA&s');
+        }
+        
+        .middle-age-btn {
+            background-image: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjWT3RKuWGe4ZrrevGEMdc3LEHMqFvT-kOqSbHk9ebl3Q0UZZ4F9JUyuoRDf_eTF6czIsJwXd-eAShsHb823k6EFh-gq8HGstiCDGeS9Nb7n4tb2VXlocmUma_EebBJdG2apEAkpbUMrgAR/s1600/6-caballeros-y-personajes-de-la-edad-media-fondos.jpg');
+        }
+        
+        /* BOTONES DE MATEMÁTICA */
+        .trigonometry-btn {
+            background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .equations-btn {
+            background-image: url('https://images.unsplash.com/photo-1635372722656-389f87a941b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .inequalities-btn {
+            background-image: url('https://images.unsplash.com/photo-1635372722656-389f87a941b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        .calculus-btn {
+            background-image: url('https://images.unsplash.com/photo-1635372722656-389f87a941b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        }
+        
+        /* RAMAS DE FÍSICA */
+        .physics-branch-interface {
+            display: none;
+            padding: 30px;
+            background: linear-gradient(135deg, #252e42, #1c2333);
+            min-height: 500px;
+            margin: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            color: #e6edf3;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .branch-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid;
+        }
+        
+        .branch-content {
+            text-align: center;
+            padding: 50px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        
+        .branch-icon {
+            font-size: 5em;
+            margin-bottom: 25px;
+        }
+        
+        .branch-message {
+            font-size: 1.4em;
+            margin-bottom: 35px;
+            opacity: 0.9;
+        }
+        
+        .kinematics-interface .branch-header {
+            color: #00cbcc; /* Color cian */
+            border-bottom-color: #00cbcc;
+        }
+        
+        .dynamics-interface .branch-header {
+            color: #00cbcc; /* Color cian */
+            border-bottom-color: #00cbcc;
+        }
+        
+        .statics-interface .branch-header {
+            color: #00cbcc; /* Color cian */
+            border-bottom-color: #00cbcc;
+        }
+        
+        /* FORMULARIO */
+        form {
+            max-width: 600px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #00cbcc; /* Color cian */
+        }
+        
+        form input, form textarea {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e6edf3;
+            font-size: 1.1em;
+        }
+        
+        form button {
+            background: linear-gradient(135deg, #00cbcc, #00e5e5); /* Degradado cian */
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        
+        form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 203, 204, 0.4); /* Color cian */
+        }
+        
+        /* ANIMACIONES */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 100px 20px rgba(0, 203, 204, 0.8),
+                            0 0 200px 40px rgba(0, 203, 204, 0.5),
+                            0 0 300px 60px rgba(0, 203, 204, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 120px 30px rgba(0, 203, 204, 0.9),
+                            0 0 250px 50px rgba(0, 203, 204, 0.6),
+                            0 0 350px 70px rgba(0, 203, 204, 0.4);
+            }
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes particleAnimation {
+            from {
+                transform: translate(calc(var(--start-x) * 100vw), calc(var(--start-y) * 100vh)) scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: translate(50vw, 50vh) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .tab-container {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .course-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content, .course-interface, .physics-branch-interface {
+                margin: 15px;
+                padding: 20px;
+            }
+            
+            .logo-text {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO AGUJERO NEGRO -->
+    <div id="introOverlay">
+        <div class="stars" id="introStars"></div>
+        <div class="accretion-disk"></div>
+        <div class="black-hole"></div>
+        <div class="logo-text">JheroMblox</div>
+        <p class="loading">CARGANDO EL UNIVERSO EDUCATIVO</p>
+    </div>
+
+    <!-- INTERFAZ PRINCIPAL -->
+    <div id="mainApp">
+        <div class="header">
+            <h1>Página web de aprendizaje interactiva en Ciencias e Historia a los jóvenes </h1>
+            <p>Explora el universo del conocimiento</p>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab active" onclick="openTab(event, 'INICIO')">INICIO</button>
+            <button class="tab" onclick="openTab(event, 'CURSOS')">CURSOS</button>
+            <button class="tab" onclick="openTab(event, 'MATERIAL_DE_APOYO')">MATERIAL DE APOYO</button>
+            <button class="tab" onclick="openTab(event, 'TEMAS_LIVE')">LOCALIZACION</button>
+        </div>
+
+        <div id="INICIO" class="content active">
+            <h2>¿QUE ES JheroMblox?</h2>
+            una Página web de aprendizaje interactiva “JHEROMBLOX”, que entregue educación de calidad en Ciencias e Historia a los jóvenes de la comunidad
+
+            <h3> mision</h3>
+            nuestra misión es inspirar a los jóvenes de nuestra comunidad a través de una plataforma interactiva que transforma el aprendizaje de las Ciencias y la Historia. Ofrecemos educación de alta calidad, fomentando la curiosidad y el pensamiento crítico para empoderar a la próxima generación de pensadores y creadores.
+            <h3> vision </h3>
+            <h2>Bienvenido a Jheromblox</h2>
+            <p>Sumérgete en una experiencia educativa única donde los límites entre el aprendizaje y la diversión se desdibujan. Nuestra plataforma te transportará a dimensiones desconocidas del conocimiento.</p>
+            <img src="https://mujeresconciencia.com/app/uploads/2018/01/800px-Solvay_conference_1927.jpg" alt="Imagen de inicio">
+            <p>Desarrollado con las tecnologías más avanzadas, Jheromblox ofrece una forma innovadora de aprender física, matemáticas, biología, química e historia.</p>
+            <p>En este mundo siempre hubieron mentes brillantes como Issac Newton.</p>
+            <img src="https://www.nmas.com.mx/_next/image/?url=https%3A%2F%2Fstatic-live.nmas.com.mx%2Fnmas-news%2Fstyles%2Fcorte_16_9%2Fcloud-storage%2F2022-12%2Fquien-es-isaac-newton.jpg%3Fitok%3DfsawKb9P&w=1920&q=75" alt="Isaac Newton" width="800" height="500">
+            <p>Newton fue el primero en demostrar que las leyes naturales que gobiernan el movimiento en la Tierra y las que gobiernan el movimiento de los cuerpos celestes son las mismas. Es, a menudo, calificado como el científico más grande de todos los tiempos, y su obra como la culminación de la revolución científica.</p>
+            <p>Formaremos en este programa prodigios, aumentaremos vuestra imaginación, pensamiento creativo, entre otras habilidades y facultades mentales.</p>
+            <p>Cada punto estudiado será un gran paso que muchos no se atreven a dar, si no puedes inténtalo de nuevo, si alguien más lo hizo, tú también puedes hacerlo, y si nadie lo logró tú podrías ser el primero. El conocimiento es poder pero la clave está en saber utilizarlo.</p>
+        </div>
+
+        <div id="CURSOS" class="content">
+            <h2>CURSOS</h2>
+            <p>Selecciona el curso que deseas explorar:</p>
+
+            <div class="course-buttons">
+                <button class="course-btn physics-btn" onclick="openCourse('fisica')"><span>FÍSICA</span></button>
+                <button class="course-btn math-btn" onclick="openCourse('matematica')"><span>MATEMÁTICA</span></button>
+                <button class="course-btn biology-btn" onclick="openCourse('biologia')"><span>BIOLOGÍA</span></button>
+                <button class="course-btn chemistry-btn" onclick="openCourse('quimica')"><span>QUÍMICA</span></button>
+                <button class="course-btn history-btn" onclick="openCourse('historia')"><span>HISTORIA</span></button>
+            </div>
+        </div>
+
+        <!-- Interfaces para los cursos -->
+        <div id="fisica-interface" class="course-interface">
+            <button class="back-btn" onclick="closeCourse('fisica')">← Volver a Cursos</button>
+            <h2>FÍSICA</h2>
+            <p>Explora los misterios del universo a través de la física. Selecciona el tema que deseas estudiar:</p>
+
+            <div class="topics-grid">
+                <button class="topic-btn kinematics-btn" onclick="openPhysicsBranch('kinematics')"><span>CINEMÁTICA</span></button>
+                <button class="topic-btn dynamics-btn" onclick="openPhysicsBranch('dynamics')"><span>DINÁMICA</span></button>
+                <button class="topic-btn statics-btn" onclick="openPhysicsBranch('statics')"><span>ESTÁTICA</span></button>
+            </div>
+            <video autoplay loop muted id="video_background">
+                <source src="video4.mp4" type="video/mp4">
+                <source src="video4.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+            </video>
+            <h2>PAGINAS DE FISICA </h2>
+            <a href="">
+            <button class="boton">historia</button>
+            </a>
+        </div>
+
+        <!-- Interfaces para las ramas de física -->
+        <div id="kinematics-interface" class="physics-branch-interface kinematics-interface">
+            <button class="back-btn" onclick="closePhysicsBranch('kinematics')">← Volver a Física</button>
+            <div class="branch-header">
+                <h2>CINEMÁTICA</h2>
+                <p>Estudio del movimiento sin considerar sus causas</p>
+            </div>
+            <div class="branch-content">
+                <div class="branch-icon">📈</div>
+                <p class="branch-message">Contenido en desarrollo. Próximamente disponible.</p>
+            </div>
+        </div>
+
+        <div id="dynamics-interface" class="physics-branch-interface dynamics-interface">
+            <button class="back-btn" onclick="closePhysicsBranch('dynamics')">← Volver a Física</button>
+            
+            <h1>Libros de Dinámica</h1>
+            <p class="subtitle">Explora nuestra colección de libros especializados en dinámica para ingeniería y física</p>
+
+            <div class="book-card">
+                <div class="book-image">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h2 class="book-title">mecanica vectorial para ingenieros DINAMICA</h2>
+                    <p class="book-author">Ferdinand P. Beer</p>
+                    <p class="book-description"> es un libro de texto que introduce a los estudiantes de ingeniería a los principios de la dinámica, enfocándose en el movimiento de partículas y cuerpos rígidos mediante el uso del análisis vectorial.</p>
+                    <a href="https://drive.google.com/file/d/1RY5wiLapJbWhyDFChTJuuNmrNJOopCE6/view" class="book-link">Ver detalles</a>
+                </div>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-image">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h2 class="book-title">DINAMICA</h2>
+                    <p class="book-author"> Douglas Figueroa</p>
+                    <p class="book-description">fuerza y movimiento, aplicaciones de las leyes de newton , trabajo y energia, conservacion de la energia</p>
+                    <a href="https://drive.google.com/file/d/1fCXfq6SDtTWcBMWUizJvfwQYCRURakf9/view" class="book-link">Ver detalles</a>
+                </div>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-image">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h2 class="book-title">DYNAMIC</h2>
+                    <p class="book-author">J. L. Meriam y L. G. Kraige</p>
+                    <p class="book-description">Este libro está destinado a servir los programas de los estudios de Ingeniería. Se da a los estudiantes una visión clara, práctica, comprensible y completa de la teoría que se presenta normalmente en los primeros cursos. Se pone de manifiesto la aplicación de los principios de la Estática y de la Dinámica a la solución de problemas prácticos de Ingeniería.</p>
+                    <a href="https://drive.google.com/file/d/1iD4k8jmtz7_bzpGFgc_hXDvdkvwgl5xn/view" class="book-link">ver detalles</a>
+                </div>
+            </div>
+            
+            <div class="book-card">
+                <div class="book-image">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h2 class="book-title">Tablas de inercia</h2>
+                    <p class="book-author"> autor desconocido</p>
+                    <p class="book-description"> formulas y igualdades </p>
+                    <a href="https://drive.google.com/file/d/1N6VtU3JKH1J3iJSHV_0X_13WzRmRXTDF/view" class="book-link"> ver detalles</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="statics-interface" class="physics-branch-interface statics-interface">
+            <button class="back-btn" onclick="closePhysicsBranch('statics')">← Volver a Física</button>
+            <div class="branch-header">
+                <h2>ESTÁTICA</h2>
+                <p>Estudio de los cuerpos en equilibrio</p>
+            </div>
+            <div class="branch-content">
+                <div class="branch-icon">🏗️</div>
+                <p class="branch-message">Contenido en desarrollo. Próximamente disponible.</p>
+            </div>
+        </div>
+
+        <div id="matematica-interface" class="course-interface">
+            <button class="back-btn" onclick="closeCourse('matematica')">← Volver a Cursos</button>
+            <h2>MATEMÁTICA</h2>
+            <p>Explora el fascinante mundo de las matemáticas. Selecciona el tema que deseas estudiar:</p>
+
+            <div class="topics-grid">
+                <button class="topic-btn trigonometry-btn" onclick="openMathBranch('trigonometry')"><span>TRIGONOMETRÍA</span></button>
+                <button class="topic-btn equations-btn" onclick="openMathBranch('equations')"><span>ECUACIONES</span></button>
+                <button class="topic-btn inequalities-btn" onclick="openMathBranch('inequalities')"><span>INECUACIONES</span></button>
+                <button class="topic-btn calculus-btn" onclick="openMathBranch('calculus')"><span>CÁLCULO</span></button>
+            </div>
+            
+            <video autoplay loop muted id="video_background">
+                <source src="video.mp4" type="video/mp4">
+                <source src="video.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+            </video>
+        </div>
+
+        <div id="biologia-interface" class="course-interface">
+            <button class="back-btn" onclick="closeCourse('biologia')">← Volver a Cursos</button>
+            <h2>BIOLOGÍA</h2>
+            <p>Descubre los secretos de la vida. Selecciona el tema que deseas estudiar:</p>
+
+            <div class="topics-grid">
+                <button class="topic-btn cell-biology-btn" ><span>BIOLOGÍA CELULAR</span></button>
+                <button class="topic-btn genetics-btn" onclick="openBiologyBranch('genetics')"><span>GENÉTICA</span></button>
+                <button class="topic-btn ecology-btn" onclick="openBiologyBranch('ecology')"><span>ECOLOGÍA</span></button>
+                <button class="topic-btn biotechnology-btn" onclick="openBiologyBranch('biotechnology')"><span>BIOTECNOLOGÍA</span></button>
+            </div>
+            
+            <video autoplay loop muted id="video_background">
+                <source src="video3.mp4" type="video/mp4">
+                <source src="video3.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+            </video>
+        </div>
+
+        <div id="quimica-interface" class="course-interface">
+            <button class="back-btn" onclick="closeCourse('quimica')">← Volver a Cursos</button>
+            <h2>QUÍMICA</h2>
+            <p>Explora la ciencia de la materia. Selecciona el tema que deseas estudiar:</p>
+
+            <div class="topics-grid">
+                <button class="topic-btn gases-btn" onclick="openChemistryBranch('gases')"><span>LEY DE LOS GASES</span></button>
+                <button class="topic-btn stoichiometry-btn" onclick="openChemistryBranch('stoichiometry')"><span>ESTEQUIOMETRÍA</span></button>
+                <button class="topic-btn quantum-btn" onclick="openChemistryBranch('quantum')"><span>TEORÍA CUÁNTICA</span></button>
+            </div>
+            
+            <video autoplay loop muted id="video_background">
+                <source src="video5.mp4" type="video/mp4">
+                <source src="video5.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+            </video>
+        </div>
+
+        <div id="historia-interface" class="course-interface">
+            <button class="back-btn" onclick="closeCourse('historia')">← Volver a Cursos</button>
+            <h2>HISTORIA</h2>
+            <p>Viaja a través del tiempo. Selecciona el tema que deseas estudiar:</p>
+
+            <div class="topics-grid">
+                <button class="topic-btn universe-origin-btn" onclick="openHistoryBranch('universe-origin')"><span>ORIGEN DEL UNIVERSO</span></button>
+                <button class="topic-btn ancient-age-btn" onclick="openHistoryBranch('ancient-age')"><span>EDAD ANTIGUA</span></button>
+                <button class="topic-btn middle-age-btn" onclick="openHistoryBranch('middle-age')"><span>EDAD MEDIA</span></button>
+            </div>
+            
+            <video autoplay loop muted id="video_background">
+                <source src="video2.mp4" type="video/mp4">
+                <source src="video2.ogg" type="video/ogg">
+                Tu navegador no soporta el formato de video.
+            </video>
+        </div>
+
+        <div id="MATERIAL_DE_APOYO" class="content">
+            <h2>MATERIAL DE APOYO</h2>
+            <p>Ofrecemos recursos educativos de alta calidad para complementar tu aprendizaje</p>
+            <p>Aquí te pondremos a prueba con ejercicios de física y matemática y completar preguntas en el caso de sociales y ambos en el caso de química</p>
+             <a href="material de apoypo.html">
+            <button class="boton"> fisica</button>
+            </a>
+            
+                
+            <a href="material de apoyo2.html">
+            <button class="boton">matematica</button>
+            </a>
+            <a href="material de apoyo3.html">
+            <button class="boton">quimica</button>
+            </a>
+            <a href="material de apoyo4.html">
+            <button class="boton">historia</button>
+            </a>
+            <a href="material de apoyo5.html">
+            <button class="boton">biologia</button>
+
+            </a>
+            <h2> PRUEBAS EN MODO HEROICO</h2>
+             <a href="juegos_heroicos.html">
+            <button class="boton">quimica</button>
+
+
+            
+        </div>
+
+        <div id="TEMAS_LIVE" class="content">
+            <h2>LOCALIZACION</h2>
+            <p>Nos encontramos en la zona del plan 3000 por la avenida transcontinental al frente del colegio Renata Preto de Brunelli en Santa Cruz Bolivia</p>
+            <p>coordenadas:</p>
+            <p> numero:62194213 - 74314213</p>
+            
+            <div class="live-classes-container" id="liveClassesContainer">
+                <!-- Las clases en vivo se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 JheroMblox - Todos los derechos para JORDY Y JHOEL como creadores de esta pagina web
+        </div>
+    </div>
+
+    <script>
+        // INTRO ANIMATION SCRIPT
+        document.addEventListener('DOMContentLoaded', function() {
+            // Crear estrellas para la intro
+            createIntroStars();
+            
+            // Crear partículas para el efecto de agujero negro
+            createParticles();
+
+            // Ocultar intro y mostrar aplicación después de 5 segundos
+            setTimeout(function() {
+                document.getElementById('introOverlay').style.opacity = '0';
+                
+                setTimeout(function() {
+                    document.getElementById('introOverlay').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                    
+                    setTimeout(function() {
+                        document.getElementById('mainApp').style.opacity = '1';
+                    }, 50);
+                }, 1500);
+            }, 5000);
+        });
+
+        function createIntroStars() {
+            const introStars = document.getElementById('introStars');
+            const starCount = 800;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Tamaño aleatorio entre 1 y 3 píxeles
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Posición aleatoria
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Duración aleatoria de animación
+                star.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                introStars.appendChild(star);
+            }
+        }
+
+        function createParticles() {
+            const introOverlay = document.getElementById('introOverlay');
+
+            // Crear 100 partículas
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Tamaño aleatorio entre 2px y 6px
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Color aleatorio (cian, azul, blanco)
+                const colors = ['#fff', '#00cbcc', '#00a1a2', '#008282'];
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                // Posición inicial aleatoria
+                const startX = Math.random();
+                const startY = Math.random();
+                particle.style.setProperty('--start-x', startX);
+                particle.style.setProperty('--start-y', startY);
+
+                // Duración aleatoria entre 2s and 4s
+                const duration = Math.random() * 2 + 2;
+                particle.style.animation = `particleAnimation ${duration}s forwards`;
+
+                introOverlay.appendChild(particle);
+            }
+        }
+
+        function openTab(evt, tabName) {
+            // Ocultar todos los contenidos principales
+            var contents = document.getElementsByClassName("content");
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+
+            // Ocultar todas las interfaces de cursos
+            var courseInterfaces = document.getElementsByClassName("course-interface");
+            for (var i = 0; i < courseInterfaces.length; i++) {
+                courseInterfaces[i].style.display = "none";
+            }
+
+            // Ocultar todas las interfaces de ramas de física
+            var physicsBranchInterfaces = document.getElementsByClassName("physics-branch-interface");
+            for (var i = 0; i < physicsBranchInterfaces.length; i++) {
+                physicsBranchInterfaces[i].style.display = "none";
+            }
+
+            // Desactivar todas las pestañas
+            var tabs = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+
+            // Mostrar el contenido actual y activar la pestaña
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function openCourse(courseName) {
+            // Ocultar todos los contenidos principales
+            var contents = document.getElementsByClassName("content");
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+
+            // Ocultar todas las interfaces de cursos
+            var courseInterfaces = document.getElementsByClassName("course-interface");
+            for (var i = 0; i < courseInterfaces.length; i++) {
+                courseInterfaces[i].style.display = "none";
+            }
+
+            // Ocultar todas las interfaces de ramas de física
+            var physicsBranchInterfaces = document.getElementsByClassName("physics-branch-interface");
+            for (var i = 0; i < physicsBranchInterfaces.length; i++) {
+                physicsBranchInterfaces[i].style.display = "none";
+            }
+
+            // Mostrar la interfaz del curso seleccionado
+            document.getElementById(courseName + "-interface").style.display = "block";
+        }
+
+        function closeCourse(courseName) {
+            // Ocultar la interfaz del curso
+            document.getElementById(courseName + "-interface").style.display = "none";
+
+            // Mostrar la pestaña de cursos nuevamente
+            document.getElementById("CURSOS").classList.add("active");
+        }
+
+        function PhysicsBranch(branchName) {
+            // Ocultar todas las interfaces
+            var courseInterfaces = document.getElementsByClassName("course-interface");
+            for (var i = 0; i < courseInterfaces.length; i++) {
+                courseInterfaces[i].style.display = "none";
+            }
+
+            var physicsBranchInterfaces = document.getElementsByClassName("physics-branch-interface");
+            for (var i = 0; i < physicsBranchInterfaces.length; i++) {
+                physicsBranchInterfaces[i].style.display = "none";
+            }
+
+            // Mostrar la interfaz de la rama seleccionada
+            document.getElementById(branchName + "-interface").style.display = "block";
+        }
+
+        function closePhysicsBranch(branchName) {
+            // Ocultar la interfaz de la rama
+            document.getElementById(branchName + "-interface").style.display = "none";
+
+            // Mostrar la interfaz de física nuevamente
+            document.getElementById("fisica-interface").style.display = "block";
+        }
+
+        // Funciones para las otras materias (placeholders)
+        function openMathBranch(branchName) {
+            alert("Próximamente disponible: " + branchName);
+        }
+
+        function openBiologyBranch(branchName) {
+            alert("Próximamente disponible: " + branchName);
+        }
+
+        function openChemistryBranch(branchName) {
+            alert("Próximamente disponible: " + branchName);
+        }
+
+        function openHistoryBranch(branchName) {
+            alert("Próximamente disponible: " + branchName);
+        }
+
+        // Funciones para las clases en vivo (placeholders)
+        function filterClasses(filter) {
+            console.log("Filtrando clases por: " + filter);
+            // Aquí iría la lógica real de filtrado
+        }
+
+        function closeLiveModal() {
+            console.log("Cerrando modal de clase en vivo");
+            // Aquí iría la lógica real para cerrar el modal
+        }
+    </script>
+</body>
+</html>
