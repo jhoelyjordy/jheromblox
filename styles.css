@@ -1,0 +1,451 @@
+/* style.css */
+
+
+.slider-fondo {
+  position: fixed; /* O 'absolute' si el scroll es necesario */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('imagen1.jpg');
+  background-size: cover; /* Asegura que la imagen cubra toda la pantalla */
+  background-position: center;
+  animation: cambiar-fondo 35s infinite; /* 15 segundos de duración, se repite infinitamente */
+}
+
+/* Define las animaciones para las transiciones */
+@keyframes cambiar-fondo {
+  0% { background-image: url('imagen1.jpg'); opacity: 1; }
+  15% { background-image: url('imagen5.jpg'); opacity: 1; }
+  25% { background-image: url('imagen5.jpg'); opacity: 1; }
+  35% { background-image: url('imagen3.jpg'); opacity: 1; }
+  40% { background-image: url('imagen3.jpg'); opacity: 1; }
+  50% { background-image: url('imagen3.jpg'); opacity: 1; }
+  55% { background-image: url('imagen2.jpg'); opacity: 1; }
+  65% { background-image: url('imagen2.jpg'); opacity: 1; }
+  75% { background-image: url('imagen 4.jpg'); opacity: 1;}
+  85% { background-image: url('imagen 4.jpg'); opacity: 1; }
+  90% { background-image: url('imagen1.jpg'); opacity: 1; }
+  100% { background-image: url('imagen1.jpg'); opacity: 1; }
+}
+
+/* Ajusta las opacidades para tener una transición más suave */
+.slider-fondo {
+  opacity: 1; /* Empieza visible */
+  animation-timing-function: ease-in-out;
+}
+
+body {
+    
+    color: #fff;
+    min-height: 100vh;
+    padding-bottom: 50px;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(45deg, #36373d, #353238, #312f31, #494445);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+serif;
+  perspective: 1000px;
+  overflow-x: hidden;
+}
+
+.btn {
+  position: relative;
+  padding: 1.5rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  min-width: 200px;
+  z-index: 1;
+}
+
+.neon-pulse {
+  background: #000;
+  border: 2px solid #0ff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  overflow: visible;
+  backdrop-filter: blur(10px);
+
+  /* 2. Asegúrate de que el fondo del botón sea al menos parcialmente transparente */
+  background-color: rgba(255, 255, 255, 0.2); /* Fondo blanco semitransparente */
+
+  /* 3. Opcional: Puedes añadir más estilos para el botón */
+  padding: 30px 20px;
+  
+  color: white;
+  cursor: pointer;
+}
+
+.neon-pulse::before,
+.neon-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid #0ff;
+  border-radius: inherit;
+  animation: pulseOut 2s ease-out infinite;
+  opacity: 0;
+}
+
+.neon-pulse::after {
+  animation-delay: 1s;
+}
+
+@keyframes pulseOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+    
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    /* Aseguramos que el contenedor no bloquee el scroll */
+    min-height: auto;
+}
+
+header {
+    text-align: center;
+    padding: 40px 0;
+    animation: fadeIn 1.5s ease-out;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #ff6b6b, #ffa500, #ffd700);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 30px;
+}
+
+/* Navegación */
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 12px 25px;
+    margin: 0 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tab.active {
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Contenido de las pestañas */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.8s ease-out;
+    /* Aseguramos que el contenido pueda crecer */
+    min-height: auto;
+    overflow: visible;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #ffd700;
+}
+
+/* Grid de reseñas */
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    /* Permitimos que el grid crezca según el contenido */
+    min-height: auto;
+}
+
+/* Tarjetas de reseñas */
+.review-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardAppear 0.6s forwards;
+}
+
+.review-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.card-image {
+    height: 200px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
+    display: flex;
+    align-items: flex-end;
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.rating {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.card-description {
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    margin-right: 10px;
+}
+
+.review-date {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+/* Formulario de reseñas */
+.review-form {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 1s ease-out;
+    /* Aseguramos que el formulario no bloquee el scroll */
+    overflow: visible;
+}
+
+.form-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.5);
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.rating-input {
+    display: flex;
+    align-items: center;
+}
+
+.stars {
+    display: flex;
+    margin-left: 15px;
+}
+
+.star {
+    font-size: 1.5rem;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star.active {
+    color: #ffd700;
+}
+
+.btn-submit {
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes cardAppear {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tab {
+        margin: 5px 0;
+        width: 80%;
+        text-align: center;
+    }
+    
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    body {
+        /* En móvil aseguramos que el scroll funcione */
+        overflow-y: auto;
+    }
+}
+
+/* Aseguramos que el HTML y body permitan scroll */
+html {
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+}
+
+body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}

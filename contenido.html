@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseñas de Entretenimiento</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Reseñas de Entretenimiento</h1>
+            <p class="subtitle">Descubre y comparte opiniones sobre películas, series y juegos</p>
+        </header>
+
+        <div class="nav-tabs">
+            <div class="tab active" data-tab="movies">Películas</div>
+            <div class="tab" data-tab="series">Series</div>
+            <div class="tab" data-tab="games">Juegos</div>
+        </div>
+
+        <div class="tab-content active" id="movies">
+            <h2>Reseñas de Películas</h2>
+            <div class="reviews-grid" id="movies-grid">
+                <!-- Las reseñas de películas se cargarán aquí -->
+            </div>
+        </div>
+
+        <div class="tab-content" id="series">
+            <h2>Reseñas de Series</h2>
+            <div class="reviews-grid" id="series-grid">
+                <!-- Las reseñas de series se cargarán aquí -->
+            </div>
+        </div>
+
+        <div class="tab-content" id="games">
+            <h2>Reseñas de Juegos</h2>
+            <div class="reviews-grid" id="games-grid">
+                <!-- Las reseñas de juegos se cargarán aquí -->
+            </div>
+        </div>
+
+        <div class="review-form">
+            <h3 class="form-title">Añadir Nueva Reseña</h3>
+            <form id="review-form">
+                <div class="form-group">
+                    <label for="category">Categoría</label>
+                    <select id="category" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="movies">Película</option>
+                        <option value="series">Serie</option>
+                        <option value="games">Juego</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="title">Título</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="image">URL de la imagen</label>
+                    <input type="text" id="image" required>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Género</label>
+                    <input type="text" id="genre" required>
+                </div>
+                <div class="form-group">
+                    <label for="year">Año</label>
+                    <input type="number" id="year" min="1900" max="2030" required>
+                </div>
+                <div class="form-group">
+                    <label>Calificación</label>
+                    <div class="rating-input">
+                        <span>Selecciona:</span>
+                        <div class="stars">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="rating" required>
+                </div>
+                <div class="form-group">
+                    <label for="review">Reseña</label>
+                    <textarea id="review" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="user">Tu nombre</label>
+                    <input type="text" id="user" required>
+                </div>
+                <button type="submit" class="btn-submit">Publicar Reseña</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
